@@ -1,0 +1,25 @@
+---
+- name: Create Network Shares for Students
+  hosts: dc
+  become: true
+  tasks:
+    - name: Create the physical directory
+      file:
+        path: /srv/samba/assignments
+        state: directory
+        mode: '0777'  # In a real lab, we would use ACLs for better security
+
+    - name: Add the share configuration to smb.conf
+      blockinfile:
+        path: /etc/samba/smb.conf
+        block: |
+          [Assignments]
+              path = /srv/samba/assignments
+              read only = no
+              guest ok = no
+              browseable = yes
+
+    - name: Restart Samba AD service to apply changes
+      systemd:
+        name: samba-ad-dc
+        state: restarted

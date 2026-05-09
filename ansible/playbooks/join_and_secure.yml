@@ -1,0 +1,40 @@
+---
+- name: Automate Domain Join and Unique Identity
+  hosts: all
+  become: true
+  vars:
+    domain_name: "internal.local"
+    domain_admin: "Administrator"
+    domain_pass: "P@ssword123"
+    # Logic: If the IP is 192.168.56.21, the name becomes PC-21
+    new_hostname: "PC-{{ ansible_default_ipv4.address.split('.')[-1] }}"
+
+  tasks:
+    - name: Set Unique Hostname based on IP
+      hostname:
+        name: "{{ new_hostname }}"
+
+    - name: Update /etc/hosts to match new hostname
+      lineinfile:
+        path: /etc/hosts
+        regexp: '^127.0.1.1'
+        line: "127.0.1.1 {{ new_hostname }}"
+
+    - name: Install required AD packages
+      apt:
+        name: [realmd, sssd, sssd-tools, adcli, krb5-user, packagekit, policykit-1]
+        state: present
+
+    - name: Check if already in domain
+      command: realm list
+      register: realm_result
+      changed_when: false
+
+    - name: Join AD Domain
+      shell: "echo '{{ domain_pass }}' | realm join -U {{ domain_admin }} {{ domain_name }}"
+      when: domain_name not in realm_result.stdout
+
+    - name: Ensure Home Directories are created
+      lineinfile:
+        path: /etc/pam.d/common-session
+        line: "session optional pam_mkhomedir.so skel=/etc/skel umask=077"

@@ -1,0 +1,24 @@
+---
+- name: Configure DNS Forwarding for Lab Internet
+  hosts: dc
+  become: true
+  tasks:
+    - name: Update smb.conf to forward DNS to Google
+      blockinfile:
+        path: /etc/samba/smb.conf
+        insertafter: '\[global\]'
+        block: |
+                dns forwarder = 8.8.8.8 8.8.4.4
+
+    - name: Restart Samba AD service
+      systemd:
+        name: samba-ad-dc
+        state: restarted
+
+    - name: Verify external DNS resolution
+      shell: "host google.com"
+      register: dns_test
+    
+    - name: Show DNS result
+      debug:
+        msg: "{{ dns_test.stdout }}"

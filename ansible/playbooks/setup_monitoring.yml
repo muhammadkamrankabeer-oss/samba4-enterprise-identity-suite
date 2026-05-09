@@ -1,0 +1,16 @@
+---
+- name: Deploy Monitoring Dashboard
+  hosts: all
+  become: true
+  tasks:
+    - name: Install Cockpit
+      apt:
+        name: cockpit
+        state: present
+        update_cache: yes
+
+    - name: Ensure Cockpit service is running
+      systemd:
+        name: cockpit.socket
+        state: started
+        enabled: yes

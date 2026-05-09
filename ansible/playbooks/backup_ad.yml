@@ -1,0 +1,19 @@
+---
+- name: Backup Samba AD Database
+  hosts: dc
+  become: true
+  tasks:
+    - name: Create backup directory
+      file:
+        path: /opt/samba_backups
+        state: directory
+
+    - name: Use samba-tool to backup the domain
+      shell: "samba-tool domain backup online --targetdir=/opt/samba_backups"
+
+    - name: Fetch the backup to your laptop
+      fetch:
+        src: "/opt/samba_backups/{{ item }}"
+        dest: "./backups/"
+        flat: yes
+      with_lines: "ls /opt/samba_backups"

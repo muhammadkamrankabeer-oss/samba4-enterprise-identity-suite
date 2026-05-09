@@ -1,0 +1,47 @@
+---
+- name: Provision Samba AD DC
+  hosts: dc
+  become: true
+  tasks:
+    - name: Check if AD is already provisioned
+      stat:
+        path: /var/lib/samba/private/sam.ldb
+      register: ad_check
+
+    - name: Stop conflicting services
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop: [ 'smbd', 'nmbd', 'winbind' ]
+      when: not ad_check.stat.exists
+
+    - name: Remove default smb.conf
+      file:
+        path: /etc/samba/smb.conf
+        state: absent
+      when: not ad_check.stat.exists
+
+    - name: Provision Domain
+      shell: >
+        samba-tool domain provision
+        --use-rfc2307
+        --realm=INTERNAL.LOCAL
+        --domain=INTERNAL
+        --server-role=dc
+        --dns-backend=SAMBA_INTERNAL
+        --adminpass='P@ssword123'
+      when: not ad_check.stat.exists
+
+    - name: Unmask and Enable Samba AD DC service
+      systemd:
+        name: samba-ad-dc
+        masked: no
+        enabled: yes
+        state: started
+
+    - name: Copy Kerberos Config
+      copy:
+        src: /var/lib/samba/private/krb5.conf
+        dest: /etc/krb5.conf
+        remote_src: yes

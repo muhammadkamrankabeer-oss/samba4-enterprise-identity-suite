@@ -1,0 +1,42 @@
+---
+- name: Prepare Debian for Samba 4 AD DC
+  hosts: dc
+  become: true
+  tasks:
+    - name: Set Hostname
+      hostname:
+        name: dc1
+
+    - name: Update /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "192.168.56.20 dc1.internal.local dc1"
+        state: present
+
+    - name: Handle systemd-resolved (Disable if exists)
+      systemd:
+        name: systemd-resolved
+        state: stopped
+        enabled: no
+      failed_when: false
+
+    - name: Setup local DNS for AD
+      copy:
+        dest: /etc/resolv.conf
+        content: |
+          domain internal.local
+          nameserver 127.0.0.1
+          nameserver 8.8.8.8
+
+    - name: Install Samba AD packages
+      apt:
+        name:
+          - samba
+          - smbclient
+          - krb5-config
+          - winbind
+          - acl
+          - attr
+          - samba-ad-dc
+        state: present
+        update_cache: yes
