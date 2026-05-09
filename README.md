@@ -120,7 +120,16 @@ ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/join_and_secur
 | 🛠️ **Custom Hostname Logic** | Dynamic machine naming based on network inventory |
 
 ---
+## 📊 Monitoring & Verification
 
+The infrastructure includes an automated deployment of the Cockpit Web Console for real-time server monitoring and Samba management.
+
+### Cockpit Dashboard
+![Monitoring Dashboard](docs/cockpit.png)
+
+### Domain Verification
+![Domain Joining](docs/domainjoining.png)
+---
 ## 📂 Project Structure
 
 ```text
