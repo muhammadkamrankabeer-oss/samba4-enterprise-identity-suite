@@ -1,0 +1,4 @@
+---
+- name: Linux client role placeholder
+  debug:
+    msg: "Configuring Linux client"

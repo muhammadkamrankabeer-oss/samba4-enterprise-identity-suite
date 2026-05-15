@@ -1,0 +1,14 @@
+---
+- name: Provision Samba Domain Controller
+  hosts: dc
+  become: yes
+  roles:
+    - samba_dc
+    - security
+    - monitoring
+
+- name: Configure Linux Clients
+  hosts: clients
+  become: yes
+  roles:
+    - linux_client

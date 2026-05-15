@@ -1,167 +1,279 @@
-# 🚀 Samba4 Automated Enterprise Identity Suite
+# 🚀 Samba4 Enterprise Identity Suite
 
-> Automated deployment of a production-grade **Samba4 Active Directory Domain Controller** and Hardened Linux Clients using **Ansible** and **Vagrant**.
+> Enterprise-grade Samba4 Active Directory infrastructure automated with Ansible, Linux hardening, monitoring, and Infrastructure as Code.
 
 ![Samba4](https://img.shields.io/badge/Samba4-AD--DC-orange?style=for-the-badge)
 ![Ansible](https://img.shields.io/badge/Ansible-Automation-red?style=for-the-badge)
 ![Debian](https://img.shields.io/badge/Debian-12-A81D33?style=for-the-badge)
 ![Linux](https://img.shields.io/badge/Linux-Enterprise-yellow?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Production--Style-success?style=for-the-badge)
 
 ---
 
-## 📌 Overview
+# 📌 Overview
 
-This project automates the provisioning of a centralized **Identity & Access Management (IAM)** solution.
+This project automates the deployment of a production-style centralized Identity & Access Management (IAM) environment using Samba4 Active Directory Domain Services on Linux.
 
-The core infrastructure is built on a **Samba4 Active Directory Domain Controller (AD-DC)**. The environment is designed to replace expensive proprietary directory services with a robust, open-source alternative that handles DNS, Kerberos authentication, and LDAP.
+The infrastructure is designed as an open-source alternative to traditional Windows Active Directory environments for:
 
-Using a modular **Infrastructure-as-Code (IaC)** approach, this suite automates:
+- Educational Labs
+- Offices & SMEs
+- Linux-based infrastructure environments
+- Training centers
+- DevOps learning labs
 
-- **Server Provisioning:** Full Samba4 AD-DC promotion and DNS configuration
-- **Client Integration:** Secure, zero-touch domain joining for Linux workstations
-- **User Management:** Automated creation of domain users and departmental file shares
+Using Infrastructure as Code (IaC) principles, the platform provisions:
 
----
-
-## ⚙️ Tech Stack
-
-| Tool | Role |
-|------|------|
-| **Samba 4** | Active Directory Domain Controller |
-| **Ansible** | Automation & Orchestration |
-| **Debian 12** | Operating System |
-| **Vagrant / VirtualBox** | Infrastructure Virtualization |
-| **Cockpit** | Real-time System Monitoring |
-| **SSSD & Realmd** | Secure Linux Domain Integration |
+- Samba4 Active Directory Domain Controller
+- Linux client integration
+- Automated domain joining
+- Infrastructure hardening
+- Monitoring & administration tools
+- Shared storage environments
 
 ---
 
-## 🏗️ Architecture
+# ⚙️ Technology Stack
 
-### Domain Controller (DC1)
+| Technology | Purpose |
+|---|---|
+| Samba4 | Active Directory Domain Controller |
+| Ansible | Automation & Configuration Management |
+| Debian 12 | Linux Server Operating System |
+| Vagrant | Infrastructure Virtualization |
+| VirtualBox | Local Infrastructure Lab |
+| Cockpit | Monitoring & Web Administration |
+| SSSD / Realmd | Linux Domain Authentication |
+| Bash | Automation & Scripting |
 
-| Setting | Value |
-|---------|-------|
-| Internal IP | `192.168.56.20` |
-| Domain | `internal.local` |
-| Services | BIND9 DLZ (DNS), Kerberos KDC, LDAP |
+---
 
-### Member Workstations (PC-XX)
+# 🏗️ Enterprise Architecture
 
-- **Auto-Naming:** Clients are dynamically renamed (e.g., `PC-21`) based on network tags
-- **Auto-Home:** PAM modules automatically create home folders on first login
+## Infrastructure Components
 
-### Automation Flow
+| Component | Purpose |
+|---|---|
+| DC1 | Samba4 Active Directory Domain Controller |
+| Linux Clients | Domain Joined Workstations |
+| DNS & Kerberos | Centralized Authentication |
+| Ansible Control Node | Infrastructure Automation |
+| Cockpit | Monitoring & Management |
+
+---
+
+# 🌐 Infrastructure Flow
 
 ```text
 Host Machine (Xubuntu)
-   │
-   ├── Ansible Control Node
-   │
-   ├── [Vagrant] ──► Spin up DC1 & Member Clients
-   │
-   └── [Ansible Playbooks]
-           │
-           ├── Provision Samba AD-DC 🚀
-           ├── Configure DNS & Forwarding
-           ├── Create Domain Users/Groups
-           └── Automated Client "Realm Join" 🔐
+        │
+        ├── Ansible Control Node
+        │
+        ├── Vagrant Infrastructure
+        │
+        ├── Samba4 Domain Controller
+        │
+        ├── Linux Domain Clients
+        │
+        └── Monitoring & Administration
 ```
 
 ---
 
-## 🧩 Ansible Playbooks
+# 📂 Project Structure
+
+```text
+samba4-enterprise-identity-suite/
+├── ansible/
+│   ├── inventories/
+│   ├── playbooks/
+│   ├── roles/
+│   ├── group_vars/
+│   └── host_vars/
+├── backups/
+├── docs/
+│   ├── architecture/
+│   ├── screenshots/
+│   └── troubleshooting/
+├── monitoring/
+├── terraform/
+├── scripts/
+├── README.md
+├── Vagrantfile
+└── ssh_config
+```
+
+---
+
+# 🚀 Core Features
+
+| Feature | Description |
+|---|---|
+| ⚡ Infrastructure Automation | Automated deployment using Ansible |
+| 🔐 Centralized Authentication | Samba4 Active Directory Domain |
+| 🖥️ Linux Domain Join | Automated Linux client integration |
+| 📁 Shared Storage | Centralized SMB shares |
+| 🛡️ Security Hardening | SSH hardening, firewall, secure authentication |
+| 📊 Monitoring | Cockpit monitoring dashboard |
+| 🔄 Idempotent Playbooks | Safe repeatable deployments |
+| 🧠 Infrastructure as Code | Reproducible environments |
+
+---
+
+# 🏢 Enterprise Use Cases
+
+This platform can be adapted for:
+
+- Educational Labs & Campuses
+- Small & Medium Businesses (SMEs)
+- Linux-based Office Infrastructure
+- Open-source Active Directory Environments
+- Centralized Authentication Systems
+- Hybrid Linux Infrastructure Labs
+- IT Training Environments
+- Automated Infrastructure Demonstrations
+
+---
+
+# 🧠 Skills Demonstrated
+
+- Linux System Administration
+- Infrastructure Automation
+- Configuration Management
+- Identity & Access Management (IAM)
+- Infrastructure as Code (IaC)
+- Ansible Automation
+- Enterprise Networking
+- DNS & Kerberos
+- Monitoring & Observability
+- Virtualization
+- Security Hardening
+- Troubleshooting & Operations
+
+---
+
+# 🧩 Main Playbooks
 
 | Playbook | Purpose |
-|----------|---------|
-| `provision_dc.yml` | Full Samba4 installation and AD Domain promotion |
-| `setup_shares.yml` | Automated deployment of SMB shares with ACLs |
-| `join_and_secure.yml` | Client-side automation: DNS fix, rename, and Realm Join |
-| `setup_monitoring.yml` | Deploys Cockpit for web-based infrastructure health |
+|---|---|
+| provision_dc.yml | Deploy Samba4 Domain Controller |
+| join_and_secure.yml | Join Linux clients to domain |
+| setup_monitoring.yml | Deploy Cockpit monitoring |
+| setup_shares.yml | Configure shared folders |
+| backup_ad.yml | Backup Active Directory environment |
 
 ---
 
-## 🚀 How to Use
+# 🚀 Quick Start
 
-### 1. Clone Repository
+## 1. Clone Repository
 
 ```bash
-git clone https://github.com/muhammadkamrankabeer-oss/samba4-automated-infrastructure.git
-cd samba4-automated-infrastructure
+git clone https://github.com/muhammadkamrankabeer-oss/samba4-enterprise-identity-suite.git
+
+cd samba4-enterprise-identity-suite
 ```
 
-### 2. Provision Virtual Lab
+---
+
+## 2. Start Infrastructure
 
 ```bash
 vagrant up
 ```
 
-### 3. Execute Automation Suite
+---
+
+## 3. Run Infrastructure Automation
 
 ```bash
-# Provision the Domain Controller
-ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/provision_dc.yml
+ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/provision_dc.yml
 
-# Join Linux Clients to the Domain
-ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/join_and_secure.yml
+ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/join_and_secure.yml
 ```
 
 ---
 
-## ⚡ Features
+# 📊 Monitoring & Verification
 
-| Feature | Description |
-|---------|-------------|
-| ⚡ **Idempotent Automation** | Safe to re-run playbooks — system state is verified first |
-| 🔐 **Enterprise Security** | Hardened SSH, UFW Firewall, and secure Kerberos handshakes |
-| 📁 **Dynamic Home Directories** | Auto-creates `/home/internal.local/user` on first login |
-| 📊 **Web Monitoring** | Real-time health dashboard via Cockpit |
-| 🛠️ **Custom Hostname Logic** | Dynamic machine naming based on network inventory |
+## Cockpit Monitoring Dashboard
+
+![Cockpit Dashboard](docs/screenshots/cockpit.png)
 
 ---
-## 📊 Monitoring & Verification
 
-The infrastructure includes an automated deployment of the Cockpit Web Console for real-time server monitoring and Samba management.
+## Domain Join Verification
 
-### Cockpit Dashboard
-![Monitoring Dashboard](docs/cockpit.png)
+![Domain Joining](docs/screenshots/domainjoining.png)
 
-### Domain Verification
-![Domain Joining](docs/domainjoining.png)
 ---
-## 📂 Project Structure
 
-```text
-samba4-automated-infrastructure/
-├── Vagrantfile                   # Multi-machine lab environment
-├── ansible/
-│   ├── inventory/                # Host variables & student data
-│   └── playbooks/                # Core AD & client automation
-├── docs/                         # Architecture diagrams & proof of work
-├── scripts/                      # Management helper scripts
-└── README.md                     # This file
+# 🔍 Validation Commands
+
+## Verify Kerberos Authentication
+
+```bash
+kinit administrator
+klist
 ```
 
 ---
 
-## 🧠 Future Improvements
+## Verify Domain Membership
 
-- [ ] **v2.1** — Automated daily AD backups to remote storage
-- [ ] **v2.2** — Centralized logging with Prometheus / Grafana
-- [ ] **v2.3** — SSO integration for Koha ILS (Library System)
-
----
-
-## 👨‍💻 Author
-
-**Muhammad Kamran Kabeer** — IT Educator & DevOps Engineer
-
-- 🌐 GitHub: [muhammadkamrankabeer-oss](https://github.com/muhammadkamrankabeer-oss)
-- 💼 LinkedIn: [muhammad-kamran-kabeer-b64740a4](https://linkedin.com/in/muhammad-kamran-kabeer-b64740a4)
+```bash
+realm list
+```
 
 ---
 
-## ⭐ Support
+## List Samba Users
 
-If this automation helped your lab setup, please give this repository a **⭐ star** — it helps others find it!
+```bash
+sudo samba-tool user list
+```
+
+---
+
+# 🔐 Security Features
+
+- SSH hardening
+- Linux firewall configuration
+- Kerberos-secured authentication
+- Centralized user access control
+- Infrastructure isolation using Vagrant
+
+---
+
+# 🧠 Future Improvements
+
+- [ ] Automated daily backups
+- [ ] Prometheus + Grafana monitoring
+- [ ] Terraform-based cloud deployment
+- [ ] Role-based access control
+- [ ] CI/CD pipeline validation
+- [ ] Automated infrastructure testing
+- [ ] Multi-site Samba replication
+- [ ] AWS deployment architecture
+
+---
+
+# 👨‍💻 Author
+
+## Muhammad Kamran Kabeer
+
+DevOps Engineer focused on Linux infrastructure, automation, cloud engineering, and Infrastructure as Code.
+
+🌐 Website: https://www.devriston.com.pk
+
+💼 LinkedIn: https://www.linkedin.com/in/kamrankabeer/
+
+🐙 GitHub: https://github.com/muhammadkamrankabeer-oss
+
+---
+
+# ⭐ Support
+
+If you found this project useful, consider giving it a star ⭐
+
+This helps others discover the project and supports open-source learning.

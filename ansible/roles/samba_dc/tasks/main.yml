@@ -1,0 +1,4 @@
+---
+- name: Samba DC role placeholder
+  debug:
+    msg: "Provisioning Samba Domain Controller"
