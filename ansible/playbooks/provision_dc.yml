@@ -2,19 +2,39 @@
 - name: Provision Samba AD DC
   hosts: dc
   become: true
+
   tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Samba and required packages
+      apt:
+        name:
+          - samba
+          - smbclient
+          - winbind
+          - krb5-user
+          - dnsutils
+        state: present
+
     - name: Check if AD is already provisioned
       stat:
         path: /var/lib/samba/private/sam.ldb
       register: ad_check
 
-    - name: Stop conflicting services
+    - name: Stop conflicting Samba services
       systemd:
         name: "{{ item }}"
         state: stopped
         enabled: no
-      loop: [ 'smbd', 'nmbd', 'winbind' ]
+      loop:
+        - smbd
+        - nmbd
+        - winbind
       when: not ad_check.stat.exists
+      ignore_errors: yes
 
     - name: Remove default smb.conf
       file:
@@ -22,7 +42,7 @@
         state: absent
       when: not ad_check.stat.exists
 
-    - name: Provision Domain
+    - name: Provision Samba Domain Controller
       shell: >
         samba-tool domain provision
         --use-rfc2307
@@ -33,14 +53,13 @@
         --adminpass='P@ssword123'
       when: not ad_check.stat.exists
 
-    - name: Unmask and Enable Samba AD DC service
+    - name: Enable and start Samba AD DC service
       systemd:
         name: samba-ad-dc
-        masked: no
         enabled: yes
         state: started
 
-    - name: Copy Kerberos Config
+    - name: Copy Kerberos configuration
       copy:
         src: /var/lib/samba/private/krb5.conf
         dest: /etc/krb5.conf
