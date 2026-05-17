@@ -14,15 +14,15 @@
 
     - name: Create Student Accounts in Bulk
       shell: >
-        samba-tool user create {{ item }} 'Student@123' 
-        --userou='OU=Students' 
+        samba-tool user create {{ item }} 'Student@123'
+        --userou='OU=Students'
         --job-title='Student'
       loop: "{{ student_list }}"
       register: user_result
       failed_when: "'already exists' not in user_result.stderr and user_result.rc != 0"
 
     - name: Set Sticky Bit on Assignments Folder
-      # The '1' in '1777' is the Sticky Bit. 
+      # The '1' in '1777' is the Sticky Bit.
       # It allows everyone to write, but only owners can delete their own files.
       file:
         path: /srv/samba/assignments

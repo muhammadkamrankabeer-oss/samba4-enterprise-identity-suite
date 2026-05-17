@@ -18,7 +18,7 @@
     - name: Verify external DNS resolution
       shell: "host google.com"
       register: dns_test
-    
+
     - name: Show DNS result
       debug:
         msg: "{{ dns_test.stdout }}"

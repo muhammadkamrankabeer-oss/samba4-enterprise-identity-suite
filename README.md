@@ -1,3 +1,5 @@
+![Banner](docs/screenshots/banner.png)
+
 # 🚀 Samba4 Enterprise Identity Suite
 
 > Enterprise-grade Samba4 Active Directory infrastructure automated with Ansible, Linux hardening, monitoring, and Infrastructure as Code.
@@ -60,11 +62,9 @@ Using Infrastructure as Code (IaC) principles, the platform provisions:
 | Ansible Control Node | Infrastructure Automation |
 | Cockpit | Monitoring & Management |
 
----
+### Infrastructure Flow
 
-## 🌐 Infrastructure Flow
-
-```text
+```
 Host Machine (Xubuntu)
         │
         ├── Ansible Control Node
@@ -82,31 +82,14 @@ Host Machine (Xubuntu)
 
 ## 📂 Project Structure
 
-```text
+```
 samba4-enterprise-identity-suite/
 ├── ansible/
 │   ├── inventories/
-│   │   └── lab/
-│   │       ├── hosts.ini
-│   │       └── students.txt
 │   ├── playbooks/
-│   │   ├── backup_ad.yml
-│   │   ├── deploy_students.yml
-│   │   ├── join_and_secure.yml
-│   │   ├── join_linux_client.yml
-│   │   ├── prepare_dc.yml
-│   │   ├── provision_dc.yml
-│   │   ├── setup_dns_forwarding.yml
-│   │   ├── setup_home_folders.yml
-│   │   ├── setup_monitoring.yml
-│   │   └── setup_shares.yml
 │   ├── roles/
-│   │   ├── backup/
-│   │   ├── linux_client/
-│   │   ├── monitoring/
-│   │   ├── samba_dc/
-│   │   └── security/
-│   └── site.yml
+│   ├── group_vars/
+│   └── host_vars/
 ├── backups/
 ├── docs/
 │   ├── architecture/
@@ -137,20 +120,47 @@ samba4-enterprise-identity-suite/
 
 ---
 
+## 🏢 Enterprise Use Cases
+
+This platform can be adapted for:
+
+- Educational Labs & Campuses
+- Small & Medium Businesses (SMEs)
+- Linux-based Office Infrastructure
+- Open-source Active Directory Environments
+- Centralized Authentication Systems
+- Hybrid Linux Infrastructure Labs
+- IT Training Environments
+- Automated Infrastructure Demonstrations
+
+---
+
+## 🧠 Skills Demonstrated
+
+- Linux System Administration
+- Infrastructure Automation
+- Configuration Management
+- Identity & Access Management (IAM)
+- Infrastructure as Code (IaC)
+- Ansible Automation
+- Enterprise Networking
+- DNS & Kerberos
+- Monitoring & Observability
+- Virtualization
+- Security Hardening
+- Troubleshooting & Operations
+
+---
+
 ## 🧩 Main Playbooks
 
 | Playbook | Purpose |
 |---|---|
-| provision_dc.yml | Deploy Samba4 Domain Controller |
-| prepare_dc.yml | Prepare DC prerequisites |
-| join_and_secure.yml | Join Linux clients to domain & apply security hardening |
-| join_linux_client.yml | Join individual Linux clients to AD domain |
-| setup_monitoring.yml | Deploy Cockpit monitoring |
-| setup_shares.yml | Configure shared folders |
-| setup_home_folders.yml | Configure user home directories |
-| setup_dns_forwarding.yml | Configure DNS forwarding |
-| deploy_students.yml | Bulk deploy student accounts |
-| backup_ad.yml | Backup Active Directory environment |
+| `provision_dc.yml` | Deploy Samba4 Domain Controller |
+| `join_and_secure.yml` | Join Linux clients to domain |
+| `setup_monitoring.yml` | Deploy Cockpit monitoring |
+| `setup_shares.yml` | Configure shared folders |
+| `backup_ad.yml` | Backup Active Directory environment |
 
 ---
 
@@ -179,89 +189,15 @@ ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/join_and
 
 ---
 
-## 📸 Deployment Screenshots
+## 📊 Monitoring & Verification
 
-### Vagrant Infrastructure
+### Cockpit Monitoring Dashboard
 
-**Vagrant Up — VM provisioning**
+![Cockpit Dashboard](docs/screenshots/cockpit.png)
 
-![Vagrant Up](docs/screenshots/vagrant-up.png)
-
-**Vagrant Status — Infrastructure running**
-
-![Vagrant Status](docs/screenshots/vagrant-status.png)
-
----
-
-### Ansible Automation
-
-**Ansible Ping — Connectivity verified across all hosts**
-
-![Ansible Ping Success](docs/screenshots/ansible-ping-success.png)
-
-**Provision DC — Samba4 Domain Controller deployed successfully**
-
-![Provision DC Success](docs/screenshots/provision-dc-success.png)
-
-**Idempotent Playbook — Safe re-run with no unintended changes**
-
-![Idempotent Playbook](docs/screenshots/idempotent-playbook.png.png)
-
----
-
-### Domain Controller & Services
-
-**Samba Service Running**
-
-![Samba Service Running](docs/screenshots/samba-service-running.png)
-
-**SSSD Service Running**
-
-![SSSD Service Running](docs/screenshots/sssd-service-running.png)
-
-**Domain Level Check**
-
-![Domain Level Check](docs/screenshots/domain-level-check.png)
-
----
-
-### Domain Join & Authentication
-
-**Linux Domain Join — Client successfully joined to AD**
-
-![Linux Domain Join Success](docs/screenshots/linux-domain-join-success.png)
-
-**Domain Joining Process**
+### Domain Join Verification
 
 ![Domain Joining](docs/screenshots/domainjoining.png)
-
-**Domain Login — Successful AD user login on Linux client**
-
-![Domain Login Success](docs/screenshots/domain-login-success.png)
-
-**Domain User Authentication**
-
-![Domain User Authentication](docs/screenshots/domain-user-authentication.png)
-
----
-
-### Domain Verification
-
-**Domain Info, User List & Kerberos Ticket (klist)**
-
-![Domain Info, User List, klist](docs/screenshots/domain-info_userlist_klist.png)
-
----
-
-### Monitoring
-
-**Cockpit Enterprise Dashboard**
-
-![Cockpit Dashboard Enterprise](docs/screenshots/cockpit-dashboard-enterprise.png)
-
-**Cockpit Playbook Execution**
-
-![Cockpit Playbook](docs/screenshots/cockpit-playbook.png)
 
 ---
 
@@ -286,18 +222,6 @@ realm list
 sudo samba-tool user list
 ```
 
-### Check Samba Service Status
-
-```bash
-systemctl status samba-ad-dc
-```
-
-### Check SSSD Service Status
-
-```bash
-systemctl status sssd
-```
-
 ---
 
 ## 🔐 Security Features
@@ -307,39 +231,6 @@ systemctl status sssd
 - Kerberos-secured authentication
 - Centralized user access control
 - Infrastructure isolation using Vagrant
-- Security role applied via Ansible (`roles/security`)
-
----
-
-## 🏢 Enterprise Use Cases
-
-This platform can be adapted for:
-
-- Educational Labs & Campuses
-- Small & Medium Businesses (SMEs)
-- Linux-based Office Infrastructure
-- Open-source Active Directory Environments
-- Centralized Authentication Systems
-- Hybrid Linux Infrastructure Labs
-- IT Training Environments
-- Automated Infrastructure Demonstrations
-
----
-
-## 🧠 Skills Demonstrated
-
-- Linux System Administration
-- Infrastructure Automation
-- Configuration Management
-- Identity & Access Management (IAM)
-- Infrastructure as Code (IaC)
-- Ansible Automation & Role Design
-- Enterprise Networking
-- DNS & Kerberos
-- Monitoring & Observability
-- Virtualization
-- Security Hardening
-- Troubleshooting & Operations
 
 ---
 
@@ -358,14 +249,11 @@ This platform can be adapted for:
 
 ## 👨‍💻 Author
 
-### Muhammad Kamran Kabeer
-
+**Muhammad Kamran Kabeer**
 DevOps Engineer focused on Linux infrastructure, automation, cloud engineering, and Infrastructure as Code.
 
 🌐 Website: [https://www.devriston.com.pk](https://www.devriston.com.pk)
-
 💼 LinkedIn: [https://www.linkedin.com/in/kamrankabeer/](https://www.linkedin.com/in/kamrankabeer/)
-
 🐙 GitHub: [https://github.com/muhammadkamrankabeer-oss](https://github.com/muhammadkamrankabeer-oss)
 
 ---
