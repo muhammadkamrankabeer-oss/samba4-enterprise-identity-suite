@@ -1,0 +1,190 @@
+name: 🚀 Samba4 Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  # ──────────────────────────────────────────────
+  # JOB 1: YAML Lint
+  # ──────────────────────────────────────────────
+  yaml-lint:
+    name: 📄 YAML Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Run YAML Lint
+        run: |
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 160}}}" ansible/
+
+  # ──────────────────────────────────────────────
+  # JOB 2: Ansible Lint
+  # ──────────────────────────────────────────────
+  ansible-lint:
+    name: 🔍 Ansible Lint
+    runs-on: ubuntu-latest
+    needs: yaml-lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible & ansible-lint
+        run: |
+          pip install ansible ansible-lint
+
+      - name: Run Ansible Lint on all playbooks
+        run: |
+          ansible-lint ansible/playbooks/ --exclude ansible/roles/ || true
+
+      - name: Run Ansible Lint on all roles
+        run: |
+          ansible-lint ansible/roles/ || true
+
+  # ──────────────────────────────────────────────
+  # JOB 3: Ansible Syntax Check
+  # ──────────────────────────────────────────────
+  ansible-syntax-check:
+    name: ✅ Ansible Syntax Check
+    runs-on: ubuntu-latest
+    needs: yaml-lint
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Syntax check — provision_dc.yml
+        run: |
+          ansible-playbook ansible/playbooks/provision_dc.yml \
+            -i ansible/inventories/lab/hosts.ini \
+            --syntax-check
+
+      - name: Syntax check — join_and_secure.yml
+        run: |
+          ansible-playbook ansible/playbooks/join_and_secure.yml \
+            -i ansible/inventories/lab/hosts.ini \
+            --syntax-check
+
+      - name: Syntax check — setup_monitoring.yml
+        run: |
+          ansible-playbook ansible/playbooks/setup_monitoring.yml \
+            -i ansible/inventories/lab/hosts.ini \
+            --syntax-check
+
+      - name: Syntax check — setup_shares.yml
+        run: |
+          ansible-playbook ansible/playbooks/setup_shares.yml \
+            -i ansible/inventories/lab/hosts.ini \
+            --syntax-check
+
+      - name: Syntax check — backup_ad.yml
+        run: |
+          ansible-playbook ansible/playbooks/backup_ad.yml \
+            -i ansible/inventories/lab/hosts.ini \
+            --syntax-check
+
+      - name: Syntax check — deploy_students.yml
+        run: |
+          ansible-playbook ansible/playbooks/deploy_students.yml \
+            -i ansible/inventories/lab/hosts.ini \
+            --syntax-check
+
+  # ──────────────────────────────────────────────
+  # JOB 4: Security Scan (Checkov)
+  # ──────────────────────────────────────────────
+  security-scan:
+    name: 🛡️ Security Scan
+    runs-on: ubuntu-latest
+    needs: ansible-syntax-check
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Run Checkov on Ansible
+        run: |
+          checkov -d ansible/ --framework ansible --quiet || true
+
+  # ──────────────────────────────────────────────
+  # JOB 5: Vagrantfile Validation
+  # ──────────────────────────────────────────────
+  vagrantfile-check:
+    name: 📦 Vagrantfile Syntax Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Ruby (for Vagrant syntax check)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+
+      - name: Check Vagrantfile syntax
+        run: ruby -c Vagrantfile
+
+  # ──────────────────────────────────────────────
+  # JOB 6: CI Summary (runs after all jobs)
+  # ──────────────────────────────────────────────
+  ci-summary:
+    name: 📊 CI Summary
+    runs-on: ubuntu-latest
+    needs:
+      - yaml-lint
+      - ansible-lint
+      - ansible-syntax-check
+      - security-scan
+      - vagrantfile-check
+    if: always()
+
+    steps:
+      - name: Print CI Summary
+        run: |
+          echo "============================================"
+          echo "   🚀 Samba4 Enterprise CI/CD Summary"
+          echo "============================================"
+          echo "  ✅ YAML Lint        : ${{ needs.yaml-lint.result }}"
+          echo "  ✅ Ansible Lint     : ${{ needs.ansible-lint.result }}"
+          echo "  ✅ Syntax Check     : ${{ needs.ansible-syntax-check.result }}"
+          echo "  🛡️  Security Scan    : ${{ needs.security-scan.result }}"
+          echo "  📦 Vagrantfile      : ${{ needs.vagrantfile-check.result }}"
+          echo "============================================"

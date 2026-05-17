@@ -10,7 +10,7 @@
 
 ---
 
-# 📌 Overview
+## 📌 Overview
 
 This project automates the deployment of a production-style centralized Identity & Access Management (IAM) environment using Samba4 Active Directory Domain Services on Linux.
 
@@ -33,7 +33,7 @@ Using Infrastructure as Code (IaC) principles, the platform provisions:
 
 ---
 
-# ⚙️ Technology Stack
+## ⚙️ Technology Stack
 
 | Technology | Purpose |
 |---|---|
@@ -48,9 +48,9 @@ Using Infrastructure as Code (IaC) principles, the platform provisions:
 
 ---
 
-# 🏗️ Enterprise Architecture
+## 🏗️ Enterprise Architecture
 
-## Infrastructure Components
+### Infrastructure Components
 
 | Component | Purpose |
 |---|---|
@@ -62,7 +62,7 @@ Using Infrastructure as Code (IaC) principles, the platform provisions:
 
 ---
 
-# 🌐 Infrastructure Flow
+## 🌐 Infrastructure Flow
 
 ```text
 Host Machine (Xubuntu)
@@ -80,16 +80,33 @@ Host Machine (Xubuntu)
 
 ---
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```text
 samba4-enterprise-identity-suite/
 ├── ansible/
 │   ├── inventories/
+│   │   └── lab/
+│   │       ├── hosts.ini
+│   │       └── students.txt
 │   ├── playbooks/
+│   │   ├── backup_ad.yml
+│   │   ├── deploy_students.yml
+│   │   ├── join_and_secure.yml
+│   │   ├── join_linux_client.yml
+│   │   ├── prepare_dc.yml
+│   │   ├── provision_dc.yml
+│   │   ├── setup_dns_forwarding.yml
+│   │   ├── setup_home_folders.yml
+│   │   ├── setup_monitoring.yml
+│   │   └── setup_shares.yml
 │   ├── roles/
-│   ├── group_vars/
-│   └── host_vars/
+│   │   ├── backup/
+│   │   ├── linux_client/
+│   │   ├── monitoring/
+│   │   ├── samba_dc/
+│   │   └── security/
+│   └── site.yml
 ├── backups/
 ├── docs/
 │   ├── architecture/
@@ -105,7 +122,7 @@ samba4-enterprise-identity-suite/
 
 ---
 
-# 🚀 Core Features
+## 🚀 Core Features
 
 | Feature | Description |
 |---|---|
@@ -120,7 +137,181 @@ samba4-enterprise-identity-suite/
 
 ---
 
-# 🏢 Enterprise Use Cases
+## 🧩 Main Playbooks
+
+| Playbook | Purpose |
+|---|---|
+| provision_dc.yml | Deploy Samba4 Domain Controller |
+| prepare_dc.yml | Prepare DC prerequisites |
+| join_and_secure.yml | Join Linux clients to domain & apply security hardening |
+| join_linux_client.yml | Join individual Linux clients to AD domain |
+| setup_monitoring.yml | Deploy Cockpit monitoring |
+| setup_shares.yml | Configure shared folders |
+| setup_home_folders.yml | Configure user home directories |
+| setup_dns_forwarding.yml | Configure DNS forwarding |
+| deploy_students.yml | Bulk deploy student accounts |
+| backup_ad.yml | Backup Active Directory environment |
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/muhammadkamrankabeer-oss/samba4-enterprise-identity-suite.git
+cd samba4-enterprise-identity-suite
+```
+
+### 2. Start Infrastructure
+
+```bash
+vagrant up
+```
+
+### 3. Run Infrastructure Automation
+
+```bash
+ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/provision_dc.yml
+
+ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/join_and_secure.yml
+```
+
+---
+
+## 📸 Deployment Screenshots
+
+### Vagrant Infrastructure
+
+**Vagrant Up — VM provisioning**
+
+![Vagrant Up](docs/screenshots/vagrant-up.png)
+
+**Vagrant Status — Infrastructure running**
+
+![Vagrant Status](docs/screenshots/vagrant-status.png)
+
+---
+
+### Ansible Automation
+
+**Ansible Ping — Connectivity verified across all hosts**
+
+![Ansible Ping Success](docs/screenshots/ansible-ping-success.png)
+
+**Provision DC — Samba4 Domain Controller deployed successfully**
+
+![Provision DC Success](docs/screenshots/provision-dc-success.png)
+
+**Idempotent Playbook — Safe re-run with no unintended changes**
+
+![Idempotent Playbook](docs/screenshots/idempotent-playbook.png.png)
+
+---
+
+### Domain Controller & Services
+
+**Samba Service Running**
+
+![Samba Service Running](docs/screenshots/samba-service-running.png)
+
+**SSSD Service Running**
+
+![SSSD Service Running](docs/screenshots/sssd-service-running.png)
+
+**Domain Level Check**
+
+![Domain Level Check](docs/screenshots/domain-level-check.png)
+
+---
+
+### Domain Join & Authentication
+
+**Linux Domain Join — Client successfully joined to AD**
+
+![Linux Domain Join Success](docs/screenshots/linux-domain-join-success.png)
+
+**Domain Joining Process**
+
+![Domain Joining](docs/screenshots/domainjoining.png)
+
+**Domain Login — Successful AD user login on Linux client**
+
+![Domain Login Success](docs/screenshots/domain-login-success.png)
+
+**Domain User Authentication**
+
+![Domain User Authentication](docs/screenshots/domain-user-authentication.png)
+
+---
+
+### Domain Verification
+
+**Domain Info, User List & Kerberos Ticket (klist)**
+
+![Domain Info, User List, klist](docs/screenshots/domain-info_userlist_klist.png)
+
+---
+
+### Monitoring
+
+**Cockpit Enterprise Dashboard**
+
+![Cockpit Dashboard Enterprise](docs/screenshots/cockpit-dashboard-enterprise.png)
+
+**Cockpit Playbook Execution**
+
+![Cockpit Playbook](docs/screenshots/cockpit-playbook.png)
+
+---
+
+## 🔍 Validation Commands
+
+### Verify Kerberos Authentication
+
+```bash
+kinit administrator
+klist
+```
+
+### Verify Domain Membership
+
+```bash
+realm list
+```
+
+### List Samba Users
+
+```bash
+sudo samba-tool user list
+```
+
+### Check Samba Service Status
+
+```bash
+systemctl status samba-ad-dc
+```
+
+### Check SSSD Service Status
+
+```bash
+systemctl status sssd
+```
+
+---
+
+## 🔐 Security Features
+
+- SSH hardening
+- Linux firewall configuration
+- Kerberos-secured authentication
+- Centralized user access control
+- Infrastructure isolation using Vagrant
+- Security role applied via Ansible (`roles/security`)
+
+---
+
+## 🏢 Enterprise Use Cases
 
 This platform can be adapted for:
 
@@ -135,14 +326,14 @@ This platform can be adapted for:
 
 ---
 
-# 🧠 Skills Demonstrated
+## 🧠 Skills Demonstrated
 
 - Linux System Administration
 - Infrastructure Automation
 - Configuration Management
 - Identity & Access Management (IAM)
 - Infrastructure as Code (IaC)
-- Ansible Automation
+- Ansible Automation & Role Design
 - Enterprise Networking
 - DNS & Kerberos
 - Monitoring & Observability
@@ -152,100 +343,7 @@ This platform can be adapted for:
 
 ---
 
-# 🧩 Main Playbooks
-
-| Playbook | Purpose |
-|---|---|
-| provision_dc.yml | Deploy Samba4 Domain Controller |
-| join_and_secure.yml | Join Linux clients to domain |
-| setup_monitoring.yml | Deploy Cockpit monitoring |
-| setup_shares.yml | Configure shared folders |
-| backup_ad.yml | Backup Active Directory environment |
-
----
-
-# 🚀 Quick Start
-
-## 1. Clone Repository
-
-```bash
-git clone https://github.com/muhammadkamrankabeer-oss/samba4-enterprise-identity-suite.git
-
-cd samba4-enterprise-identity-suite
-```
-
----
-
-## 2. Start Infrastructure
-
-```bash
-vagrant up
-```
-
----
-
-## 3. Run Infrastructure Automation
-
-```bash
-ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/provision_dc.yml
-
-ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/join_and_secure.yml
-```
-
----
-
-# 📊 Monitoring & Verification
-
-## Cockpit Monitoring Dashboard
-
-![Cockpit Dashboard](docs/screenshots/cockpit.png)
-
----
-
-## Domain Join Verification
-
-![Domain Joining](docs/screenshots/domainjoining.png)
-
----
-
-# 🔍 Validation Commands
-
-## Verify Kerberos Authentication
-
-```bash
-kinit administrator
-klist
-```
-
----
-
-## Verify Domain Membership
-
-```bash
-realm list
-```
-
----
-
-## List Samba Users
-
-```bash
-sudo samba-tool user list
-```
-
----
-
-# 🔐 Security Features
-
-- SSH hardening
-- Linux firewall configuration
-- Kerberos-secured authentication
-- Centralized user access control
-- Infrastructure isolation using Vagrant
-
----
-
-# 🧠 Future Improvements
+## 🧠 Future Improvements
 
 - [ ] Automated daily backups
 - [ ] Prometheus + Grafana monitoring
@@ -258,21 +356,21 @@ sudo samba-tool user list
 
 ---
 
-# 👨‍💻 Author
+## 👨‍💻 Author
 
-## Muhammad Kamran Kabeer
+### Muhammad Kamran Kabeer
 
 DevOps Engineer focused on Linux infrastructure, automation, cloud engineering, and Infrastructure as Code.
 
-🌐 Website: https://www.devriston.com.pk
+🌐 Website: [https://www.devriston.com.pk](https://www.devriston.com.pk)
 
-💼 LinkedIn: https://www.linkedin.com/in/kamrankabeer/
+💼 LinkedIn: [https://www.linkedin.com/in/kamrankabeer/](https://www.linkedin.com/in/kamrankabeer/)
 
-🐙 GitHub: https://github.com/muhammadkamrankabeer-oss
+🐙 GitHub: [https://github.com/muhammadkamrankabeer-oss](https://github.com/muhammadkamrankabeer-oss)
 
 ---
 
-# ⭐ Support
+## ⭐ Support
 
 If you found this project useful, consider giving it a star ⭐
 
