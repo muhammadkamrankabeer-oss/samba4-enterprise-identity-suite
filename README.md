@@ -135,35 +135,6 @@ This platform can be adapted for:
 
 ---
 
-## 🧠 Skills Demonstrated
-
-- Linux System Administration
-- Infrastructure Automation
-- Configuration Management
-- Identity & Access Management (IAM)
-- Infrastructure as Code (IaC)
-- Ansible Automation
-- Enterprise Networking
-- DNS & Kerberos
-- Monitoring & Observability
-- Virtualization
-- Security Hardening
-- Troubleshooting & Operations
-
----
-
-## 🧩 Main Playbooks
-
-| Playbook | Purpose |
-|---|---|
-| `provision_dc.yml` | Deploy Samba4 Domain Controller |
-| `join_and_secure.yml` | Join Linux clients to domain |
-| `setup_monitoring.yml` | Deploy Cockpit monitoring |
-| `setup_shares.yml` | Configure shared folders |
-| `backup_ad.yml` | Backup Active Directory environment |
-
----
-
 ## 🚀 Quick Start
 
 ### 1. Clone Repository
@@ -189,15 +160,106 @@ ansible-playbook -i ansible/inventories/lab/hosts.ini ansible/playbooks/join_and
 
 ---
 
-## 📊 Monitoring & Verification
+## 📸 Screenshots
 
-### Cockpit Monitoring Dashboard
+### 🖥️ Vagrant Infrastructure
 
-![Cockpit Dashboard](docs/screenshots/cockpit.png)
+**Vagrant Status**
 
-### Domain Join Verification
+![Vagrant Status](docs/screenshots/vagrant-status.png)
+
+**Vagrant Up**
+
+![Vagrant Up](docs/screenshots/vagrant-up.png)
+
+---
+
+### ⚙️ Ansible Automation
+
+**Ansible Ping Success**
+
+![Ansible Ping Success](docs/screenshots/ansible-ping-success.png)
+
+**Provision DC Success**
+
+![Provision DC Success](docs/screenshots/provision-dc-success.png)
+
+**Idempotent Playbook Run**
+
+![Idempotent Playbook](docs/screenshots/idempotent-playbook.png.png)
+
+**Cockpit Playbook Execution**
+
+![Cockpit Playbook](docs/screenshots/cockpit-playbook.png)
+
+---
+
+### 🏢 Domain Controller
+
+**Samba Service Running**
+
+![Samba Service Running](docs/screenshots/samba-service-running.png)
+
+**Domain Level Check**
+
+![Domain Level Check](docs/screenshots/domain-level-check.png)
+
+**Domain Info, User List & Kerberos Ticket**
+
+![Domain Info, User List & klist](docs/screenshots/domain-info_userlist_klist.png)
+
+---
+
+### 🖥️ Linux Domain Join
+
+**Domain Joining Process**
 
 ![Domain Joining](docs/screenshots/domainjoining.png)
+
+**Linux Domain Join Success**
+
+![Linux Domain Join Success](docs/screenshots/linux-domain-join-success.png)
+
+**SSSD Service Running**
+
+![SSSD Service Running](docs/screenshots/sssd-service-running.png)
+
+---
+
+### 🔐 Authentication
+
+**Domain Login Success**
+
+![Domain Login Success](docs/screenshots/domain-login-success.png)
+
+**Domain User Authentication**
+
+![Domain User Authentication](docs/screenshots/domain-user-authentication.png)
+
+---
+
+### 📊 Monitoring
+
+**Cockpit Enterprise Dashboard**
+
+![Cockpit Dashboard](docs/screenshots/cockpit-dashboard-enterprise.png)
+
+---
+
+## 🧩 Main Playbooks
+
+| Playbook | Purpose |
+|---|---|
+| `provision_dc.yml` | Deploy Samba4 Domain Controller |
+| `prepare_dc.yml` | Prepare Domain Controller environment |
+| `join_and_secure.yml` | Join Linux clients to domain |
+| `join_linux_client.yml` | Linux client domain join |
+| `setup_monitoring.yml` | Deploy Cockpit monitoring |
+| `setup_shares.yml` | Configure shared folders |
+| `setup_home_folders.yml` | Configure user home directories |
+| `setup_dns_forwarding.yml` | Configure DNS forwarding |
+| `deploy_students.yml` | Deploy student user accounts |
+| `backup_ad.yml` | Backup Active Directory environment |
 
 ---
 
@@ -231,6 +293,23 @@ sudo samba-tool user list
 - Kerberos-secured authentication
 - Centralized user access control
 - Infrastructure isolation using Vagrant
+
+---
+
+## 🧠 Skills Demonstrated
+
+- Linux System Administration
+- Infrastructure Automation
+- Configuration Management
+- Identity & Access Management (IAM)
+- Infrastructure as Code (IaC)
+- Ansible Automation
+- Enterprise Networking
+- DNS & Kerberos
+- Monitoring & Observability
+- Virtualization
+- Security Hardening
+- Troubleshooting & Operations
 
 ---
 
