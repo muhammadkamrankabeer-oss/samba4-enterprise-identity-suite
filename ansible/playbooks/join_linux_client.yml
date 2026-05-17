@@ -1,52 +1,77 @@
 ---
-- name: Join Linux Clients to Active Directory
+- name: Join Linux Clients to Samba Active Directory
   hosts: clients
   become: true
+
   vars:
     domain_name: "internal.local"
     domain_admin: "Administrator"
-    domain_password: "P@ssword123" # In production, use Ansible Vault for this!
+    domain_password: "P@ssword123"
+    dc_ip: "192.168.56.20"
 
   tasks:
-    - name: Install AD-related packages
+
+    - name: Set DNS to Domain Controller
+      copy:
+        dest: /etc/resolv.conf
+        content: |
+          nameserver {{ dc_ip }}
+          search {{ domain_name }}
+
+    - name: Install required AD packages
       apt:
         name:
           - realmd
           - sssd
           - sssd-tools
-          - adcli
-          - krb5-user
-          - packagekit
-          - libpam-sss
           - libnss-sss
+          - libpam-sss
+          - adcli
+          - samba-common-bin
+          - oddjob
+          - oddjob-mkhomedir
+          - packagekit
+          - krb5-user
         state: present
         update_cache: yes
 
-    - name: Check if already joined to domain
-      shell: "realm list | grep {{ domain_name }}"
+    - name: Discover Active Directory Realm
+      command: realm discover {{ domain_name }}
+      register: realm_discovery
+      changed_when: false
+
+    - name: Check if machine already joined
+      shell: realm list | grep {{ domain_name }}
       register: realm_check
       failed_when: false
       changed_when: false
 
-    - name: Join the domain
-      shell: "echo '{{ domain_password }}' | realm join -U {{ domain_admin }} {{ domain_name }}"
+    - name: Join Linux client to Active Directory
+      shell: |
+        echo '{{ domain_password }}' | realm join {{ domain_name }} -U {{ domain_admin }}
       when: realm_check.rc != 0
 
-    - name: Configure SSSD to use short usernames (student1 instead of student1@internal.local)
+    - name: Configure SSSD short usernames
       lineinfile:
         path: /etc/sssd/sssd.conf
         regexp: '^use_fully_qualified_names ='
         line: 'use_fully_qualified_names = False'
-      notify: Restart SSSD
 
-    - name: Ensure Home Directories are created on login
+    - name: Enable automatic home directory creation
       lineinfile:
         path: /etc/pam.d/common-session
-        line: "session optional pam_mkhomedir.so skel=/etc/skel umask=077"
+        line: 'session required pam_mkhomedir.so skel=/etc/skel umask=077'
         state: present
 
-  handlers:
-    - name: Restart SSSD
+    - name: Set correct permissions on SSSD config
+      file:
+        path: /etc/sssd/sssd.conf
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Restart and enable SSSD
       service:
         name: sssd
         state: restarted
+        enabled: yes
